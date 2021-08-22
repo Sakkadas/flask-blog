@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% extends 'base.html' %}
 
-<body>
-<h1>Hello {{ user_name|capitalize }}</h1>
-</body>
+{% block content %}
 
-</html>
+    <h1>Hello {{ user_name|capitalize }}</h1>
+
+{% endblock %}
