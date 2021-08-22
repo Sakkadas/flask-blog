@@ -9,6 +9,18 @@
 <h1>Hello World!</h1>
 <p>This is my first webpage on Flask!</p>
 <p>A few more words</p>
+<p>My name is {{ first_name }}</p>
+<p>{{ stuff | title }}</p>
+<h3> Favorite Pizza</h3>
+{% for topping in favorite_pizza %}
+    {% if topping == 41 %}
+        {{ topping + 100 }}
+    {% else %}
+        {{ topping }} <br>
+    {% endif %}
+{% endfor %}
+
 
 </body>
+
 </html>
