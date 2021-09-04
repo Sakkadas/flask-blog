@@ -7,12 +7,14 @@ from datetime import datetime
 
 # Create a Flask Instance
 app = Flask(__name__)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # SECRET KEY
 app.config['SECRET_KEY'] = "placeholder"
 
 # Add Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
 # Initialize the Database
 db = SQLAlchemy(app)
 
@@ -27,10 +29,34 @@ class Users(db.Model):
     # Create __str__
     def __repr__(self):
         return f'{self.name}'
+
+class UserForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
 # Create a Form Class
 class NameForm(FlaskForm):
     name = StringField("What's Your Name", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+@app.route('/user/add', methods=['GET', 'POST'])
+def add_user():
+    name = None
+    form = UserForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            user = Users(name=form.name.data, email=form.email.data)
+            db.session.add(user)
+            db.session.commit()
+        name = form.name.data
+        form.name.data = ''
+        form.email.data = ''
+        flash("User Added Successfully")
+    our_users = Users.query.order_by(Users.date_added)
+    return render_template("add_user.html", form=form, name=name, our_users=our_users)
 
 
 # Create a route decorator
