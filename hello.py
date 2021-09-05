@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from flask import Flask, render_template, flash
+from flask import Flask, render_template, flash, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
@@ -14,6 +14,10 @@ load_dotenv()
 
 # Create a Flask Instance
 app = Flask(__name__)
+
+# SECRET KEY
+app.config['SECRET_KEY'] = "placeholder"
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # MySQL
 app.config['MYSQL_HOST'] = 'localhost'
@@ -28,14 +32,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://root:{os.getenv('DB_KE
 db = SQLAlchemy(app)
 
 
-# SECRET KEY
-app.config['SECRET_KEY'] = "placeholder"
-
-# Add Database
 # sqlite
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-
-
 
 # Create Model
 class Users(db.Model):
@@ -53,6 +51,25 @@ class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+# Update DataBase Record
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    form = UserForm()
+    name_to_update = Users.query.get_or_404(id)
+    if request.method == "POST":
+        name_to_update.name = request.form['name']
+        name_to_update.email = request.form['email']
+        try:
+            db.session.commit()
+            flash("User Updated Successfully")
+            return render_template("update.html", form=form, name_to_update=name_to_update)
+        except:
+            flash("Error, there was a problem... try again")
+            return render_template("update.html", form=form, name_to_update=name_to_update)
+    else:
+        return render_template("update.html", form=form, name_to_update=name_to_update)
 
 
 # Create a Form Class
