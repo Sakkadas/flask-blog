@@ -1,22 +1,40 @@
+from dotenv import load_dotenv
+import os
 from flask import Flask, render_template, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+
+from flaskext.mysql import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+# load dotenv
+load_dotenv()
 
 # Create a Flask Instance
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+# MySQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = os.getenv("DB_KEY")
+app.config['MYSQL_DB'] = 'flask_database'
+
+mysql = MySQL(app)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://root:{os.getenv('DB_KEY')}@localhost/flask_database"
+# Initialize the Database
+db = SQLAlchemy(app)
+
 
 # SECRET KEY
 app.config['SECRET_KEY'] = "placeholder"
 
 # Add Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+# sqlite
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
-# Initialize the Database
-db = SQLAlchemy(app)
 
 
 # Create Model
@@ -30,10 +48,12 @@ class Users(db.Model):
     def __repr__(self):
         return f'{self.name}'
 
+
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
 
 # Create a Form Class
 class NameForm(FlaskForm):
