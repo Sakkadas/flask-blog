@@ -2,7 +2,6 @@
 
 {% block content %}
     {% for message in get_flashed_messages() %}
-
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -17,10 +16,9 @@
         <table class="table table-striped">
             {% for our_user in our_users %}
                 <tr>
-                    <td>  {{ our_user.id }}. <a
-                            href="{{ url_for('update', id=our_user.id) }}">{{ our_user.name }}</a>- {{ our_user.email }}
-                        {{ our_user.favorite_color }}
-                    </td>
+                <td>{{ our_user.id }}. <a href="{{ url_for('update', id=our_user.id)}}">
+                    {{ our_user.name }}</a> - {{ our_user.email }} - {{ our_user.favorite_color }} - 
+		        <a href="{{ url_for('delete', id=our_user.id)}}">Delete</a></td>
                 </tr>
             {% endfor %}
         </table>
@@ -50,11 +48,12 @@
         <table class="table table-striped">
             {% for our_user in our_users %}
                 <tr>
-                    <td>  {{ our_user.id }}. <a href="{{ url_for('update', id=our_user.id) }}">{{ our_user.name }}</a> -
-                        {{ our_user.email }} - {{ our_user.favorite_color }}</td>
+                <td>{{ our_user.id }}. <a href="{{ url_for('update', id=our_user.id)}}">
+                    {{ our_user.name }}</a> - {{ our_user.email }} - {{ our_user.favorite_color }} - 
+		        <a href="{{ url_for('delete', id=our_user.id)}}">Delete</a></td>
                 </tr>
             {% endfor %}
         </table>
     {% endif %}
 {% endblock %}
-
+F
